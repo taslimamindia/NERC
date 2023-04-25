@@ -2,3 +2,5 @@
 .vscode/*
 venv
 venv/*
+model_cnn.keras
+tf-idf.ipynb
