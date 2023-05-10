@@ -4,6 +4,8 @@ from nltk import word_tokenize, sent_tokenize, download
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
+download('stopwords')
+download('wordnet')
 
 class Preprocessing:
     def __init__(self, data: Data, text=None, lang="english"):

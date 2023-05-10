@@ -1,9 +1,12 @@
 from utils.data import Data
+import os
 
 class Loading():
     def __init__(self, path):
-        base_file = "../Data/conll2003_english/"
-        # base_file = "/content/NERC/Data/conll2003_english/"
+        if os.path.exists("../Data/conll2003_english/"): 
+            base_file = "../Data/conll2003_english/"
+        else:
+            base_file = "/content/NERC/Data/conll2003_english/"        
         self.data = Data()
         self.load_sentences(base_file + path)
     def load_sentences(self, filepath):

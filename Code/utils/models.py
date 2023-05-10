@@ -12,7 +12,6 @@ from utils.preprocessing import Preprocessing
 from utils.vectorization import Vectorization
 
 # Hyperparameters
-EMBEDDING_DIM = 100
 NUM_FILTERS = 256
 KERNEL_SIZE = 3
 DROPOUT_RATE = 0.5
@@ -132,12 +131,12 @@ class Model_LSTM:
                 256,
                 input_shape=(Data.MAX_LENGTH, Data.VOCAB_SIZE),
                 return_sequences=True,
-                dropout=0.5,
+                dropout=DROPOUT_RATE,
             )
         )
-        self.model_LSTM.add(LSTM(128, return_sequences=True, dropout=0.5))
-        self.model_LSTM.add(LSTM(64, return_sequences=True, dropout=0.5))
-        self.model_LSTM.add(LSTM(32, return_sequences=True, dropout=0.5))
+        self.model_LSTM.add(LSTM(128, return_sequences=True, dropout=DROPOUT_RATE))
+        self.model_LSTM.add(LSTM(64, return_sequences=True, dropout=DROPOUT_RATE))
+        self.model_LSTM.add(LSTM(32, return_sequences=True, dropout=DROPOUT_RATE))
         self.model_LSTM.add(Dense(len(Data.unique_ner_tags), activation="softmax"))
 
     def architecture1D(self):
@@ -148,24 +147,18 @@ class Model_LSTM:
                 128,
                 input_shape=(1, Data.VOCAB_SIZE),
                 return_sequences=True,
-                dropout=0.5,
+                dropout=DROPOUT_RATE,
             )
         )
-        self.model_LSTM.add(LSTM(64, return_sequences=True, dropout=0.5))
-        self.model_LSTM.add(LSTM(32, return_sequences=True, dropout=0.5))
+        self.model_LSTM.add(LSTM(64, return_sequences=True, dropout=DROPOUT_RATE))
+        self.model_LSTM.add(LSTM(32, return_sequences=True, dropout=DROPOUT_RATE))
         self.model_LSTM.add(Dense(len(Data.unique_ner_tags), activation="softmax"))
 
     def summary(self):
         self.model_LSTM.summary()
 
     def trainning(self, train: Data, valid: Data = None):
-        cat_accuracy = tf.keras.metrics.CategoricalAccuracy()
-        recall = tf.keras.metrics.Recall()
-        self.model_LSTM.compile(
-            optimizer=tf.keras.optimizers.Adam(),
-            loss=tf.keras.losses.CategoricalCrossentropy(),
-            metrics=[cat_accuracy, recall],
-        )
+        self.model_LSTM.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
         if valid == None:
             self.model_LSTM.fit(train.x, train.y, batch_size=BATCH_SIZE, epochs=EPOCHS)
         else:
@@ -208,7 +201,7 @@ class Model_CNN:
                 64,
                 KERNEL_SIZE,
                 activation="relu",
-                input_shape=(Data.MAX_LENGTH, EMBEDDING_DIM),
+                input_shape=(Data.MAX_LENGTH, Data.VOCAB_SIZE),
                 padding="same",
             )
         )
@@ -220,13 +213,8 @@ class Model_CNN:
     def summary(self):
         self.model.summary()
 
-    def trainning(self, train: Data, valid: Data = None):
-        accuracy = tf.keras.metrics.Accuracy()
-        self.model.compile(
-            optimizer=tf.keras.optimizers.Adam(),
-            loss=tf.keras.losses.CategoricalCrossentropy(),
-            metrics=[accuracy]
-        )
+    def trainning(self, train: Data, valid: Data = None):        
+        self.model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
         if valid == None:
             self.model.fit(train.x, train.y, batch_size=BATCH_SIZE, epochs=EPOCHS)
         else:
