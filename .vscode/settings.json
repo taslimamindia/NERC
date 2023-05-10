@@ -1,6 +1,10 @@
 {
     "cSpell.words": [
         "lemmatize",
-        "pretraining"
+        "Lemmatizer",
+        "nltk",
+        "pretraining",
+        "stopwords",
+        "trainning"
     ]
 }
