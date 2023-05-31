@@ -1,0 +1,5 @@
+Code/file.py
+word2vec/gensim-data/word2vec-google-news-300/word2vec-google-news-300.gz
+word2vec/gensim-data/word2vec-google-news-300/GoogleNews-vectors-negative300.bin
+word2vec/gensim-data/word2vec-google-news-300/__init__.py
+word2vec/gensim-data/information.json

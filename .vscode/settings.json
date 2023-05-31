@@ -1,11 +1,8 @@
 {
     "cSpell.words": [
-        "lemmatize",
-        "Lemmatizer",
         "lstm",
-        "nltk",
-        "pretraining",
-        "stopwords",
-        "trainning"
+        "Permet",
+        "sents",
+        "zipdata"
     ]
 }
