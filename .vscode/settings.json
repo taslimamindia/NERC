@@ -1,8 +1,11 @@
 {
     "cSpell.words": [
+        "dtype",
         "lstm",
+        "ndarray",
         "Permet",
         "sents",
+        "unformat",
         "zipdata"
     ]
 }
