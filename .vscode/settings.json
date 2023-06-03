@@ -1,11 +1,16 @@
 {
     "cSpell.words": [
         "dtype",
+        "keras",
+        "lemmatize",
         "lstm",
         "ndarray",
         "Permet",
+        "pyunpack",
+        "relu",
         "sents",
         "unformat",
+        "unrar",
         "zipdata"
     ]
 }
