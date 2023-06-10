@@ -175,10 +175,10 @@ def evaluation(y_true, y_predict):
     )
 
 
-def checkDataset(train, test, valid):
+def checkDataset(train:Data=None, test:Data=None, valid:Data=None):
     if train != None:
-        print("X_train", train.x.shape, "y_train", train.y.shape, "\n")
+        print("X_train", train.x.shape, "Features_train", train.features.shape, "y_train", train.y.shape, "\n")
     if test != None:
-        print("X_test", test.x.shape, "y_test", test.y.shape, "\n")
+        print("X_test", test.x.shape, "Features_test", test.features.shape, "y_test", test.y.shape, "\n")
     if valid != None:
-        print("X_valid", valid.x.shape, "y_valid", valid.y.shape)
+        print("X_valid", valid.x.shape, "Features_valid", valid.features.shape, "y_valid", valid.y.shape)

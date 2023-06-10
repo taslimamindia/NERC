@@ -5,13 +5,9 @@ from nerc.data import Data
 class Loading:
     def __init__(self, path):
         self.data = Data()
-        if os.path.exists(path):
-            self.load_sentences(path)
-        else:
-            base_file = "/content/NERC/Data/conll2003_english/"
-            self.load_sentences(base_file + path)
+        self.__load_sentences(path)
 
-    def load_sentences(self, filepath):
+    def __load_sentences(self, filepath):
         tokens, pos_tags, chunk_tags, ner_tags = [], [], [], []
         with open(filepath, "r") as f:
             for line in f.readlines():

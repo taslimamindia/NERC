@@ -22,6 +22,18 @@ class Base_Model:
         x_train, x_test, self.train.y, self.test.y = train_test_split(
             self.data.positions, self.data.y, test_size=0.2
         )
+        # Train Set:
+        self.train.x = matching_array(x_train, self.data.x)
+        self.train.features = matching_array(x_train, self.data.features)
+        # Test Set:
+        self.test.x = matching_array(x_test, self.data.x)
+        self.test.features = matching_array(x_test, self.data.features)
+        
+    def train_test_valid_split(self):
+        # Split the training, testing, and validation
+        x_train, x_test, self.train.y, self.test.y = train_test_split(
+            self.data.positions, self.data.y, test_size=0.2
+        )
         x_train, x_valid, self.train.y, self.valid.y = train_test_split(
             x_train, self.train.y, test_size=0.15
         )
@@ -34,17 +46,6 @@ class Base_Model:
         # valid Set:
         self.valid.x = matching_array(x_valid, self.data.x)
         self.valid.features = matching_array(x_valid, self.data.features)
-
-        # initial_size = self.train.features.shape[1]
-        # data = format_for_splitting(self.data.x, self.data.features)
-        # x_train, x_valid, self.train.y, self.valid.y = test_test_split(x_train, self.train.y, test_size=0.2)
-        # self.train.x, self.train.features = unformat_for_splitting(
-        #     x_train, initial_size=initial_size
-        # )
-        # self.valid.x, self.valid.features = unformat_for_splitting(x_valid, initial_size=initial_size)
-        # self.test.x, self.test.features = unformat_for_splitting(
-        #     x_test, initial_size=initial_size
-        # )
 
     def change(self, max_length=None, vocab_size=None, padding_size=None):
         if max_length != None:
