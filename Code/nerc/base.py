@@ -16,6 +16,14 @@ class Base_Model:
         self.word2vec_model = word2vec
         self.model = None
         self.history = None
+        self.status = None
+        self.metrics = {
+            "train_loss": None, 
+            "train_accuracy":None, 
+            "test_loss": None,
+            "test_accuracy":None,
+            "details_metric": None
+        }
 
     def train_test_split(self):
         # Split the training, testing, and validation
@@ -81,11 +89,13 @@ class Base_Model:
     ):
         self.model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
         self.history = self.model.fit(
-            x_train,
-            y_train,
+            x_train, y_train,
             batch_size=self.data.BATCH_SIZE,
             epochs=self.data.EPOCHS,
         )
+        metrics = self.model.get_metrics_result()
+        self.metrics["train_loss"] = round(float(metrics["loss"]), 4)
+        self.metrics["train_accuracy"] = round(float(metrics["accuracy"]), 4)
 
     def training_valid(
         self,
@@ -105,10 +115,15 @@ class Base_Model:
             epochs=self.data.EPOCHS,
             validation_data=(x_valid, y_valid),
         )
+        metrics = self.model.get_metrics_result()
+        self.metrics["train_loss"] = round(float(metrics["loss"]), 4)
+        self.metrics["train_accuracy"] = round(float(metrics["accuracy"]), 4)
 
     def testing(self, x_test, y_test):
-        return self.model.evaluate(x_test, y_test)
+        metrics = self.model.evaluate(x_test, y_test, return_dict=True)
+        self.metrics["test_loss"] = round(metrics["loss"], 4)
+        self.metrics["test_accuracy"] = round(metrics["accuracy"], 4)
 
     def predicting(self, x_test, y_test):
         y_predict = self.model.predict(x_test, batch_size=self.data.BATCH_SIZE)
-        evaluation(y_test, y_predict, self.data.unique_ner_tags.get("O"))
+        self.metrics["details_metric"] = evaluation(y_test, y_predict, self.data.unique_ner_tags.get("O"))

@@ -1,29 +1,47 @@
-from nerc.data import Data
-
 import numpy as np
-
-# import unrar
-# import pyunpack
 from pickle import dump, load
 from keras.utils import pad_sequences
+from copy import deepcopy
+
+from nerc.data import Data
+import os
+# import unrar
+# import pyunpack
 
 
 # def unziprar(path_rar, dest_dir):
 #     pyunpack.Archive(path_rar).extractall(dest_dir, auto_create_dir=True)
 
+def save_model(cmodel, model, status, dir, name):
+    if not os.path.exists("Model/" + dir): os.makedirs("Model/" + dir)
+    cmodel.status = status
+    reset_for_serialization(model, cmodel)
+    serialization(cmodel, "Model/" + dir + "/" + name + ".pickle")
 
-def reset_for_serialization(model):
-    model.data.sentences_num = []
-    model.data.ner_tags = []
-    model.data.ner_tags_num = []
-    model.data.chunk_tags = []
-    model.data.pos_tags = []
-    model.data.features = []
-    model.data.positions = []
-    model.data.x, model.data.y = None, None
-    model.train, model.test, model.valid = None, None, None
-    model.word2vec_model = None
-    model.history = None
+
+def reset_for_serialization(model, m):
+    d = Data(
+        VOCAB_SIZE=model.data.VOCAB_SIZE,
+        PADDING_SIZE=model.data.PADDING_SIZE,
+        EPOCHS=model.data.EPOCHS,
+        DROPOUT_RATE=model.data.DROPOUT_RATE,
+        BATCH_SIZE=model.data.BATCH_SIZE,
+        KERNEL_SIZE=model.data.KERNEL_SIZE,
+        NUM_FILTERS=model.data.NUM_FILTERS,
+    )
+    # # Dictionaries
+    d.unique_ner_tags = model.data.unique_ner_tags.copy()
+    d.unique_chunk_tags = model.data.unique_chunk_tags.copy()
+    d.unique_pos_tags = model.data.unique_pos_tags.copy()
+    d.toCategorizeNerTags = model.data.toCategorizeNerTags.copy()
+    d.toCategorizeChunkTags = model.data.toCategorizeChunkTags.copy()
+    d.toCategorizePosTags = model.data.toCategorizePosTags.copy()
+    # # Listes
+    d.sentences = model.data.sentences.copy()
+    m.data = d
+    m.model = deepcopy(model.model)
+    m.history = deepcopy(model.history)
+    m.metrics = deepcopy(model.metrics)
 
 
 def matching_array(positions, data):
@@ -170,7 +188,7 @@ def padding(data: Data):
     data.ner_tags_num = data.y
 
 
-def evaluation(y_true, y_predict, tag_noEntity:int):
+def evaluation(y_true, y_predict, tag_noEntity: int):
     """ " noEnt == No Entities, ent == entities"""
     ent_true, ent_false, noEnt_true, noEnt_false = 0, 0, 0, 0
     x, y = y_true.shape
@@ -187,32 +205,37 @@ def evaluation(y_true, y_predict, tag_noEntity:int):
                 ent_true += 1
             else:
                 ent_false += 1
-    print("----------------------- Evaluation -------------------------")
-    if ent_true + ent_false == 0: 
-        correct_pourcent_ent =  0
+
+    if ent_true + ent_false == 0:
+        correct_pourcent_ent = 0
         incorrect_pourcent_ent = 0
-    else: 
+    else:
         correct_pourcent_ent = round(ent_true / (ent_true + ent_false), 3)
         incorrect_pourcent_ent = round(ent_false / (ent_false + ent_true), 3)
-    if noEnt_false + noEnt_true == 0: 
+    if noEnt_false + noEnt_true == 0:
         correct_pourcent_noEnt = 0
         incorrect_pourcent_noEnt = 0
-    else: 
+    else:
         correct_pourcent_noEnt = round(noEnt_true / (noEnt_true + noEnt_false), 3)
         incorrect_pourcent_noEnt = round(noEnt_false / (noEnt_false + noEnt_true), 3)
-    print(
-        "Entities: \n\t[correct=({}, {}%), incorrect=({}, {}%)]".format(
-            ent_true, correct_pourcent_ent,
-            ent_false, incorrect_pourcent_ent
-        ),
-        end="\n",
+    eva = "----------------------- Evaluation -------------------------\n"
+    entities = "Entities: \n\t[correct=({}, {}%), incorrect=({}, {}%)]\n".format(
+        ent_true, correct_pourcent_ent, ent_false, incorrect_pourcent_ent
     )
-    print(
-        "No Entities: \n\t[correct=({}, {}%), incorrect=({}, {}%)]".format(
-            noEnt_true, correct_pourcent_noEnt,
-            noEnt_false, incorrect_pourcent_noEnt
-        )
+    noEntities = "No Entities: \n\t[correct=({}, {}%), incorrect=({}, {}%)]".format(
+        noEnt_true, correct_pourcent_noEnt, noEnt_false, incorrect_pourcent_noEnt
     )
+    print(eva, entities, noEntities)
+    return {
+        "Entities": {
+            "Correct": {"numbers": ent_true, "pourcent": correct_pourcent_ent},
+            "Incorrect": {"numbers": ent_false, "pourcent": incorrect_pourcent_ent},
+        },
+        "No Entities": {
+            "Correct": {"numbers": noEnt_true, "pourcent": correct_pourcent_noEnt},
+            "Incorrect": {"numbers": noEnt_false, "pourcent": incorrect_pourcent_noEnt},
+        },
+    }
 
 
 def checkDataset(train: Data = None, test: Data = None, valid: Data = None):

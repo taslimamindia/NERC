@@ -47,7 +47,11 @@ class Evaluation:
         else: raise Exception("Error: Model Word2vec is not yet defined !!!")
 
     def predict(self):
-        y_predict = self.model.model.predict([self.model.data.x, self.model.data.features])
+        if self.model.status == 1:
+            y_predict = self.model.model.predict(self.model.data.x)
+        elif self.model.status == 2: 
+            y_predict = self.model.model.predict([self.model.data.x, self.model.data.features])
+        else: raise Exception("Error: Type de status is not yet defined !!!")
         text = self.model.data.sentences.copy()
         for k in range(len(y_predict)):
             i = int(self.model.data.positions[k][0])
