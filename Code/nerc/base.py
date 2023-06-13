@@ -8,10 +8,10 @@ from nerc.vectorization import Vectorization
 
 
 class Base_Model:
-    def __init__(self, data: Data, word2vec: Model_Word2Vec):
-        self.train = Data()
-        self.test = Data()
-        self.valid = Data()
+    def __init__(self, data: Data, word2vec: Model_Word2Vec, train, test, valid):
+        self.train = train
+        self.test = test
+        self.valid = valid
         self.data = data
         self.word2vec_model = word2vec
         self.model = None
@@ -60,7 +60,6 @@ class Base_Model:
         self.data.features_level()
         preprocessing = Preprocessing(data=self.data)
         preprocessing.remove_stopword()
-        self.data.unicity()
 
     def vectorization(self):
         vector = Vectorization(data=self.data, word2vec_model=self.word2vec_model)
@@ -112,4 +111,4 @@ class Base_Model:
 
     def predicting(self, x_test, y_test):
         y_predict = self.model.predict(x_test, batch_size=self.data.BATCH_SIZE)
-        evaluation(y_test, y_predict)
+        evaluation(y_test, y_predict, self.data.unique_ner_tags.get("O"))

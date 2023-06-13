@@ -6,6 +6,7 @@ from nerc.functions import margin, flatting, string2num
 from nerc.data import Data
 from nerc.word2vec import Model_Word2Vec
 
+
 class Vectorization:
     # path = "E:\\word2vec\\gensim-data\\word2vec-google-news-300\\GoogleNews-vectors-negative300.bin"
     # word2vec_model = KeyedVectors.load_word2vec_format(path, binary=True)
@@ -30,21 +31,23 @@ class Vectorization:
     def vectorized_x(self):
         self.word2vec()
         self.data.sentences_num = margin(
-            self.data.sentences_num, batch_size=Data.PADDING_SIZE
+            self.data.sentences_num, batch_size=self.data.PADDING_SIZE
         )
         self.data.sentences_num = flatting(self.data.sentences_num)
         self.data.x = np.array(self.data.sentences_num, dtype="float32")
-    
+
     def tag2num(self):
         self.data.ner_tags_num = [
-            [Data.unique_ner_tags.get(tag) for tag in tags]
+            [self.data.unique_ner_tags.get(tag) for tag in tags]
             for tags in self.data.ner_tags_num
         ]
 
     def num2oneHotEncoding(self):
-        NUM_CLASSES = 9
         self.data.ner_tags_num = [
-            to_categorical(tags, num_classes=NUM_CLASSES)
+            [
+                self.data.toCategorizeNerTags.get(tag)
+                for tag in tags
+            ]
             for tags in self.data.ner_tags_num
         ]
 
@@ -57,20 +60,21 @@ class Vectorization:
         # copy the data
         df_min_max_scaled = df.copy()
         # apply normalization techniques
-        for column in df_min_max_scaled.columns:
+        for column in ["chunk_tags", "pos_tags"]:
             df_min_max_scaled[column] = (
                 df_min_max_scaled[column] - df_min_max_scaled[column].min()
             ) / (df_min_max_scaled[column].max() - df_min_max_scaled[column].min())
         return df_min_max_scaled
 
     def vectorized_features(self):
-        chunks = string2num(flatting(self.data.chunk_tags), Data.unique_chunk_tags)
-        poss = string2num(flatting(self.data.pos_tags), Data.unique_pos_tags)
+        chunks = string2num(flatting(self.data.chunk_tags), self.data.unique_chunk_tags)
+        poss = string2num(flatting(self.data.pos_tags), self.data.unique_pos_tags)
         features = flatting(self.data.features)
-        df_tags = pd.DataFrame({"chunk_tags": chunks, "pos_tags": poss})
+        df_tags = pd.DataFrame({"chunk_tags": chunks, "pos_tags": poss}, dtype="float32")
         df_features = pd.DataFrame(
             data=features,
             columns=["is_capitalize", "isupper", "islower", "istitle", "isdigit"],
+            dtype="float32"
         )
         df = pd.concat((df_tags, df_features), axis=1)
         self.data.features = self.__scaled(df).to_numpy(dtype="float32")

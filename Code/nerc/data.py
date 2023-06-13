@@ -1,19 +1,24 @@
-class Data:
-    unique_words = {"<PAD>": 0}
-    unique_ner_tags = {"O": 0}
-    unique_chunk_tags = {}
-    unique_pos_tags = {}
-    MAX_LENGTH = 50
-    VOCAB_SIZE = 100
-    PADDING_SIZE = 10
-    # Hyperparameters
-    NUM_FILTERS = 256
-    KERNEL_SIZE = 3
-    DROPOUT_RATE = 0.2
-    BATCH_SIZE = 32
-    EPOCHS = 40
+from keras.utils import to_categorical
 
-    def __init__(self):
+
+class Data:
+    def __init__(self, VOCAB_SIZE = 100, PADDING_SIZE = 10, NUM_FILTERS = 256, KERNEL_SIZE = 3, DROPOUT_RATE = 0.2, BATCH_SIZE = 32, EPOCHS = 40):
+        # # Dictionaries
+        self.unique_ner_tags = {}
+        self.unique_chunk_tags = {}
+        self.unique_pos_tags = {}
+        self.toCategorizeNerTags = {}
+        self.toCategorizeChunkTags = {}
+        self.toCategorizePosTags = {}
+        # # Parameters
+        self.VOCAB_SIZE = VOCAB_SIZE
+        self.PADDING_SIZE = PADDING_SIZE
+        self.NUM_FILTERS = NUM_FILTERS
+        self.KERNEL_SIZE = KERNEL_SIZE
+        self.DROPOUT_RATE = DROPOUT_RATE
+        self.BATCH_SIZE = BATCH_SIZE
+        self.EPOCHS = EPOCHS
+        # # Listes
         self.sentences = []
         self.sentences_num = []
         self.ner_tags = []
@@ -22,7 +27,21 @@ class Data:
         self.pos_tags = []
         self.features = []
         self.positions = []
+        # # Numpy arrays
         self.x, self.y = None, None
+
+    def setParams(self, data):
+        self.unique_ner_tags = data.unique_ner_tags
+        self.unique_chunk_tags = data.unique_chunk_tags
+        self.unique_pos_tags = data.unique_pos_tags
+        self.toCategorizeNerTags = data.toCategorizeNerTags
+        self.VOCAB_SIZE = data.VOCAB_SIZE
+        self.PADDING_SIZE = data.PADDING_SIZE
+        self.NUM_FILTERS = data.NUM_FILTERS
+        self.KERNEL_SIZE = data.KERNEL_SIZE
+        self.DROPOUT_RATE = data.DROPOUT_RATE
+        self.BATCH_SIZE = data.BATCH_SIZE
+        self.EPOCHS = data.EPOCHS
 
     def get_positions(self):
         self.positions = [
@@ -49,38 +68,34 @@ class Data:
         data.features = self.features + o.features
         return data
 
-    def word2idx(self, word: str):
-        return Data.unique_words.get(word, None)
-
-    def idx2word(self, index: int):
-        for word, value in Data.unique_words.items():
-            if index is value:
-                return word
-        return None
-
     def tag2idx(self, tag):
-        return Data.unique_ner_tags.get(tag, None)
+        return self.unique_ner_tags.get(tag, None)
 
     def idx2tag(self, index):
-        for tag, value in Data.unique_ner_tags.items():
+        for tag, value in self.unique_ner_tags.items():
             if index == value:
                 return tag
         return None
 
-    def __unicity_tag(self, dico: dict, listes: list):
+    def __unicity_tag(self, dico: dict, toCategorizeDico: dict, listes: list):
         unique_word = set()
         [unique_word.update(tags) for tags in listes]
-        max_index = len(dico)
-        for word in list(unique_word):
-            if dico.get(word, None) == None:
-                dico[word] = max_index
-                max_index += 1
+        numerics = range(len(unique_word))
+        dico.update(zip(unique_word, numerics))
+        toCategorizeDico.update(
+            zip(numerics, to_categorical(numerics, len(unique_word)))
+        )
 
     def unicity(self):
-        self.__unicity_tag(Data.unique_ner_tags, self.ner_tags_num)
-        self.__unicity_tag(Data.unique_words, self.sentences_num)
-        self.__unicity_tag(Data.unique_chunk_tags, self.chunk_tags)
-        self.__unicity_tag(Data.unique_pos_tags, self.pos_tags)
+        self.__unicity_tag(
+            self.unique_ner_tags, self.toCategorizeNerTags, self.ner_tags_num
+        )
+        self.__unicity_tag(
+            self.unique_chunk_tags, self.toCategorizeChunkTags, self.chunk_tags
+        )
+        self.__unicity_tag(
+            self.unique_pos_tags, self.toCategorizePosTags, self.pos_tags
+        )
 
     def features_level(self):
         def is_capitalize(word):

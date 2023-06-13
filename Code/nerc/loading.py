@@ -3,9 +3,10 @@ from nerc.data import Data
 
 
 class Loading:
-    def __init__(self, path):
-        self.data = Data()
-        self.__load_sentences(path)
+    def __init__(self, data:Data, path, names):
+        self.data = data
+        for name in names:
+            self.__load_sentences(path + name)
 
     def __load_sentences(self, filepath):
         tokens, pos_tags, chunk_tags, ner_tags = [], [], [], []

@@ -20,7 +20,7 @@ class Preprocessing:
                 for sentence in sent_tokenize(self.text, language=self.lang)
             ]
             self.data.sentences = [
-                [token for token in sentence if token not in stopwords.words(self.lang)]
+                [token for token in sentence]
                 for sentence in sentenses
             ]
             self.data.sentences_num = self.data.sentences

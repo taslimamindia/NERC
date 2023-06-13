@@ -12,8 +12,25 @@ from keras.utils import pad_sequences
 #     pyunpack.Archive(path_rar).extractall(dest_dir, auto_create_dir=True)
 
 
+def reset_for_serialization(model):
+    model.data.sentences_num = []
+    model.data.ner_tags = []
+    model.data.ner_tags_num = []
+    model.data.chunk_tags = []
+    model.data.pos_tags = []
+    model.data.features = []
+    model.data.positions = []
+    model.data.x, model.data.y = None, None
+    model.train, model.test, model.valid = None, None, None
+    model.word2vec_model = None
+    model.history = None
+
+
 def matching_array(positions, data):
-    return np.array([data[int(pos3)] for pos1, pos2, pos3 in positions], dtype="float32")
+    return np.array(
+        [data[int(pos3)] for pos1, pos2, pos3 in positions], dtype="float32"
+    )
+
 
 def serialization(data, path):
     with open(path, "wb") as outfile:
@@ -153,32 +170,78 @@ def padding(data: Data):
     data.ner_tags_num = data.y
 
 
-def evaluation(y_true, y_predict):
-    true, false, total, predict = 0, 0, 0, 0
+def evaluation(y_true, y_predict, tag_noEntity:int):
+    """ " noEnt == No Entities, ent == entities"""
+    ent_true, ent_false, noEnt_true, noEnt_false = 0, 0, 0, 0
     x, y = y_true.shape
     for i in range(x):
         real_tag = np.argmax(y_true[i])
         predict_tag = np.argmax(y_predict[i])
-        if predict_tag == 0:
-            predict += 1
-        if real_tag != 0:
-            total = total + 1
-            if real_tag == predict_tag:
-                true = true + 1
+        if predict_tag == tag_noEntity:
+            if predict_tag == real_tag:
+                noEnt_true += 1
             else:
-                false = false + 1
+                noEnt_false += 1
+        else:
+            if real_tag == predict_tag:
+                ent_true += 1
+            else:
+                ent_false += 1
     print("----------------------- Evaluation -------------------------")
-    print(y_true.shape)
-    print(predict, x)
+    if ent_true + ent_false == 0: 
+        correct_pourcent_ent =  0
+        incorrect_pourcent_ent = 0
+    else: 
+        correct_pourcent_ent = round(ent_true / (ent_true + ent_false), 3)
+        incorrect_pourcent_ent = round(ent_false / (ent_false + ent_true), 3)
+    if noEnt_false + noEnt_true == 0: 
+        correct_pourcent_noEnt = 0
+        incorrect_pourcent_noEnt = 0
+    else: 
+        correct_pourcent_noEnt = round(noEnt_true / (noEnt_true + noEnt_false), 3)
+        incorrect_pourcent_noEnt = round(noEnt_false / (noEnt_false + noEnt_true), 3)
     print(
-        true, false, total, round(true / total, 3), round(false / total, 3), end="\n\n"
+        "Entities: \n\t[correct=({}, {}%), incorrect=({}, {}%)]".format(
+            ent_true, correct_pourcent_ent,
+            ent_false, incorrect_pourcent_ent
+        ),
+        end="\n",
+    )
+    print(
+        "No Entities: \n\t[correct=({}, {}%), incorrect=({}, {}%)]".format(
+            noEnt_true, correct_pourcent_noEnt,
+            noEnt_false, incorrect_pourcent_noEnt
+        )
     )
 
 
-def checkDataset(train:Data=None, test:Data=None, valid:Data=None):
+def checkDataset(train: Data = None, test: Data = None, valid: Data = None):
     if train != None:
-        print("X_train", train.x.shape, "Features_train", train.features.shape, "y_train", train.y.shape, "\n")
+        print(
+            "X_train",
+            train.x.shape,
+            "Features_train",
+            train.features.shape,
+            "y_train",
+            train.y.shape,
+            "\n",
+        )
     if test != None:
-        print("X_test", test.x.shape, "Features_test", test.features.shape, "y_test", test.y.shape, "\n")
+        print(
+            "X_test",
+            test.x.shape,
+            "Features_test",
+            test.features.shape,
+            "y_test",
+            test.y.shape,
+            "\n",
+        )
     if valid != None:
-        print("X_valid", valid.x.shape, "Features_valid", valid.features.shape, "y_valid", valid.y.shape)
+        print(
+            "X_valid",
+            valid.x.shape,
+            "Features_valid",
+            valid.features.shape,
+            "y_valid",
+            valid.y.shape,
+        )
