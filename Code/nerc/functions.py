@@ -3,6 +3,7 @@ from pickle import dump, load
 from keras.utils import pad_sequences
 from copy import deepcopy
 from nerc.data import Data
+import tensorflow as tf
 import os
 # import unrar
 # import pyunpack
@@ -24,16 +25,14 @@ def deserialization(path):
 
 def load_model(dir, name):
     model = deserialization(dir + name + '.pickle')
-    # model.model = keras.models.load_model(dir + name)
+    model.model = tf.keras.models.load_model(dir + name + '.keras')
     return model
 
 
 def save_model(cmodel, model, status, dir, name):
     if not os.path.exists(dir): os.makedirs(dir)
     cmodel.status = status
-    model.model.save(dir + "/" + name)
     model.model.save(dir + "/" + name + ".keras")
-    model.model.save(dir + "/" + name + ".h5")
     reset_for_serialization(model, cmodel)
     serialization(cmodel, dir + "/" + name + ".pickle")
 
@@ -58,7 +57,7 @@ def reset_for_serialization(model, m):
     # # Listes
     d.sentences = model.data.sentences.copy()
     m.data = d
-    m.history = deepcopy(model.history)
+    # m.history = deepcopy(model.history)
     m.metrics = deepcopy(model.metrics)
 
 

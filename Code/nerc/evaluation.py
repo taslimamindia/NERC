@@ -20,7 +20,7 @@ class Evaluation:
             process.tokenize()
         else:
             self.model.data.sentences = self.text
-        self.model.word2vec_model = Model_Word2Vec(self.model.data.sentences, self.model.data.VOCAB_SIZE)
+        self.model.word2vec_model = Model_Word2Vec(self.model.data.sentences + sentences, self.model.data.VOCAB_SIZE)
         (
             self.model.data.sentences,
             self.model.data.pos_tags,
@@ -52,9 +52,9 @@ class Evaluation:
             y_predict = self.model.model.predict([self.model.data.x, self.model.data.features])
         else: raise Exception("Error: Type de status is not yet defined !!!")
         text = self.model.data.sentences.copy()
+        listes = []
         for k in range(len(y_predict)):
             i = int(self.model.data.positions[k][0])
             j = int(self.model.data.positions[k][1])
-            print(argmax(y_predict[k]))
-            text[i][j] = [text[i][j], self.model.data.idx2tag(argmax(y_predict[k]))]
-        return text
+            listes.append([text[i][j], self.model.data.idx2tag(argmax(y_predict[k]))])
+        return listes

@@ -126,4 +126,5 @@ class Base_Model:
 
     def predicting(self, x_test, y_test):
         y_predict = self.model.predict(x_test, batch_size=self.data.BATCH_SIZE)
+        print("O", self.data.unique_ner_tags.get("O"))
         self.metrics["details_metric"] = evaluation(y_test, y_predict, self.data.unique_ner_tags.get("O"))
