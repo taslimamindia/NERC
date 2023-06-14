@@ -20,7 +20,7 @@ class Evaluation:
             process.tokenize()
         else:
             self.model.data.sentences = self.text
-        self.model.word2vec_model = Model_Word2Vec(self.model.data.sentences + sentences, self.model.data.VOCAB_SIZE)
+        self.model.word2vec_model = Model_Word2Vec(self.model.data.sentences, self.model.data.VOCAB_SIZE)
         (
             self.model.data.sentences,
             self.model.data.pos_tags,
@@ -41,7 +41,6 @@ class Evaluation:
         if self.model.word2vec_model != None:
             vector = Vectorization(data=self.model.data, word2vec_model=self.model.word2vec_model)
             vector.vectorized_x()
-            # vector.vectorized_y()
             vector.vectorized_features()
             vector.vectorized_positions()
         else: raise Exception("Error: Model Word2vec is not yet defined !!!")
@@ -56,5 +55,6 @@ class Evaluation:
         for k in range(len(y_predict)):
             i = int(self.model.data.positions[k][0])
             j = int(self.model.data.positions[k][1])
+            print(argmax(y_predict[k]))
             text[i][j] = [text[i][j], self.model.data.idx2tag(argmax(y_predict[k]))]
         return text
