@@ -1,0 +1,45 @@
+digraph "packages" {
+rankdir=BT
+charset="utf-8"
+"nerc" [color="black", label=<nerc>, shape="box", style="solid"];
+"nerc.base" [color="black", label=<nerc.base>, shape="box", style="solid"];
+"nerc.cnn" [color="black", label=<nerc.cnn>, shape="box", style="solid"];
+"nerc.data" [color="black", label=<nerc.data>, shape="box", style="solid"];
+"nerc.evaluation" [color="black", label=<nerc.evaluation>, shape="box", style="solid"];
+"nerc.functions" [color="black", label=<nerc.functions>, shape="box", style="solid"];
+"nerc.loading" [color="black", label=<nerc.loading>, shape="box", style="solid"];
+"nerc.lstm" [color="black", label=<nerc.lstm>, shape="box", style="solid"];
+"nerc.parameters" [color="black", label=<nerc.parameters>, shape="box", style="solid"];
+"nerc.preprocessing" [color="black", label=<nerc.preprocessing>, shape="box", style="solid"];
+"nerc.tagChunker" [color="black", label=<nerc.tagChunker>, shape="box", style="solid"];
+"nerc.test" [color="black", label=<nerc.test>, shape="box", style="solid"];
+"nerc.vectorization" [color="black", label=<nerc.vectorization>, shape="box", style="solid"];
+"nerc.word2vec" [color="black", label=<nerc.word2vec>, shape="box", style="solid"];
+"nerc.base" -> "nerc.data" [arrowhead="open", arrowtail="none"];
+"nerc.base" -> "nerc.functions" [arrowhead="open", arrowtail="none"];
+"nerc.base" -> "nerc.preprocessing" [arrowhead="open", arrowtail="none"];
+"nerc.base" -> "nerc.vectorization" [arrowhead="open", arrowtail="none"];
+"nerc.base" -> "nerc.word2vec" [arrowhead="open", arrowtail="none"];
+"nerc.cnn" -> "nerc.base" [arrowhead="open", arrowtail="none"];
+"nerc.cnn" -> "nerc.data" [arrowhead="open", arrowtail="none"];
+"nerc.cnn" -> "nerc.word2vec" [arrowhead="open", arrowtail="none"];
+"nerc.evaluation" -> "nerc.functions" [arrowhead="open", arrowtail="none"];
+"nerc.evaluation" -> "nerc.preprocessing" [arrowhead="open", arrowtail="none"];
+"nerc.evaluation" -> "nerc.tagChunker" [arrowhead="open", arrowtail="none"];
+"nerc.evaluation" -> "nerc.vectorization" [arrowhead="open", arrowtail="none"];
+"nerc.evaluation" -> "nerc.word2vec" [arrowhead="open", arrowtail="none"];
+"nerc.functions" -> "nerc.data" [arrowhead="open", arrowtail="none"];
+"nerc.loading" -> "nerc.data" [arrowhead="open", arrowtail="none"];
+"nerc.lstm" -> "nerc.base" [arrowhead="open", arrowtail="none"];
+"nerc.lstm" -> "nerc.data" [arrowhead="open", arrowtail="none"];
+"nerc.lstm" -> "nerc.word2vec" [arrowhead="open", arrowtail="none"];
+"nerc.preprocessing" -> "nerc.data" [arrowhead="open", arrowtail="none"];
+"nerc.preprocessing" -> "nerc.functions" [arrowhead="open", arrowtail="none"];
+"nerc.test" -> "nerc.base" [arrowhead="open", arrowtail="none"];
+"nerc.test" -> "nerc.data" [arrowhead="open", arrowtail="none"];
+"nerc.test" -> "nerc.loading" [arrowhead="open", arrowtail="none"];
+"nerc.test" -> "nerc.word2vec" [arrowhead="open", arrowtail="none"];
+"nerc.vectorization" -> "nerc.data" [arrowhead="open", arrowtail="none"];
+"nerc.vectorization" -> "nerc.functions" [arrowhead="open", arrowtail="none"];
+"nerc.vectorization" -> "nerc.word2vec" [arrowhead="open", arrowtail="none"];
+}

@@ -2,8 +2,10 @@ from nerc.preprocessing import Preprocessing
 from nerc.vectorization import Vectorization
 from nerc.word2vec import Model_Word2Vec
 from nerc.tagChunker import NGramTagChunker
+from nerc.functions import flatting
 from nltk.corpus import conll2000
 from numpy import argmax
+from copy import deepcopy
 
 
 class Evaluation:
@@ -51,10 +53,14 @@ class Evaluation:
         elif self.model.status == 2: 
             y_predict = self.model.model.predict([self.model.data.x, self.model.data.features])
         else: raise Exception("Error: Type de status is not yet defined !!!")
-        text = self.model.data.sentences.copy()
-        listes = []
+        text = deepcopy(self.model.data.sentences)
         for k in range(len(y_predict)):
             i = int(self.model.data.positions[k][0])
             j = int(self.model.data.positions[k][1])
-            listes.append([text[i][j], self.model.data.idx2tag(argmax(y_predict[k]))])
-        return listes
+            tag = self.model.data.idx2tag(argmax(y_predict[k]))
+            text[i][j] = [text[i][j], tag]
+        def check(v):
+            if isinstance(v, list): return v
+            else: return [v, "O"]
+        return [check(t) for t in flatting(text)]
+            

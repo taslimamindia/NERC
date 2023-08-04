@@ -1,0 +1,24 @@
+digraph "classes" {
+rankdir=BT
+charset="utf-8"
+"nerc.base.Base_Model" [color="black", fontcolor="black", label=<Base_Model>, shape="record", style="solid"];
+"nerc.data.Data" [color="black", fontcolor="black", label=<Data>, shape="record", style="solid"];
+"nerc.evaluation.Evaluation" [color="black", fontcolor="black", label=<Evaluation>, shape="record", style="solid"];
+"nerc.loading.Loading" [color="black", fontcolor="black", label=<Loading>, shape="record", style="solid"];
+"nerc.cnn.Model_CNN" [color="black", fontcolor="black", label=<Model_CNN>, shape="record", style="solid"];
+"nerc.lstm.Model_LSTM" [color="black", fontcolor="black", label=<Model_LSTM>, shape="record", style="solid"];
+"nerc.word2vec.Model_Word2Vec" [color="black", fontcolor="black", label=<Model_Word2Vec>, shape="record", style="solid"];
+"nerc.tagChunker.NGramTagChunker" [color="black", fontcolor="black", label=<NGramTagChunker>, shape="record", style="solid"];
+"nerc.parameters.Parameter" [color="black", fontcolor="black", label=<Parameter>, shape="record", style="solid"];
+"nerc.preprocessing.Preprocessing" [color="black", fontcolor="black", label=<Preprocessing>, shape="record", style="solid"];
+"nerc.vectorization.Vectorization" [color="black", fontcolor="black", label=<Vectorization>, shape="record", style="solid"];
+"nerc.cnn.Model_CNN" -> "nerc.base.Base_Model" [arrowhead="empty", arrowtail="none"];
+"nerc.lstm.Model_LSTM" -> "nerc.base.Base_Model" [arrowhead="empty", arrowtail="none"];
+"nerc.tagChunker.NGramTagChunker" -> "nerc.evaluation.Evaluation" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="ntc", style="solid"];
+"nerc.data.Data" -> "nerc.base.Base_Model" [arrowhead="odiamond", arrowtail="none", fontcolor="green", label="data", style="solid"];
+"nerc.data.Data" -> "nerc.loading.Loading" [arrowhead="odiamond", arrowtail="none", fontcolor="green", label="data", style="solid"];
+"nerc.data.Data" -> "nerc.preprocessing.Preprocessing" [arrowhead="odiamond", arrowtail="none", fontcolor="green", label="data", style="solid"];
+"nerc.data.Data" -> "nerc.vectorization.Vectorization" [arrowhead="odiamond", arrowtail="none", fontcolor="green", label="data", style="solid"];
+"nerc.word2vec.Model_Word2Vec" -> "nerc.base.Base_Model" [arrowhead="odiamond", arrowtail="none", fontcolor="green", label="word2vec_model", style="solid"];
+"nerc.word2vec.Model_Word2Vec" -> "nerc.vectorization.Vectorization" [arrowhead="odiamond", arrowtail="none", fontcolor="green", label="word2vec_model", style="solid"];
+}

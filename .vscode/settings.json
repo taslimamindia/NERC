@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
+        "Diallo",
         "dtype",
         "keras",
+        "Lemmatization",
         "lemmatize",
         "lstm",
         "ndarray",
